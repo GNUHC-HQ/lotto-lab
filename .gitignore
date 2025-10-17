@@ -1,0 +1,9 @@
+/check_days.py
+/Data_251011.xlsx
+/excel_to_json.py
+/old.html
+venv/
+.venv/
+__pycache__/
+*.pyc
+.idea/

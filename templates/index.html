@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏆 로또 연구소 🏆</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #121212; --primary-bg: #1e1e1e; --text-color: #e0e0e0;
+            --link-color: #bb86fc; --border-color: #333333; --button-bg: #bb86fc;
+            --button-text: #121212; --chart-grid-color: rgba(255, 255, 255, 0.1);
+        }
+        body { margin: 0; font-family: sans-serif; background-color: var(--bg-color); color: var(--text-color); }
+        .container { display: flex; width: 100%; min-height: 100vh; }
+        .left-ad, .right-ad { flex: 1; background-color: var(--primary-bg); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; color: #555; }
+        .main-content { flex: 2; padding: 20px 40px; text-align: center; overflow-y: auto; }
+        h1 { color: var(--text-color); }
+        form { margin: 20px 0; }
+        form input[type="number"] { padding: 10px; width: 100px; border-radius: 5px; border: 1px solid var(--border-color); background-color: var(--primary-bg); color: var(--text-color); font-size: 16px; }
+        form button { padding: 10px 20px; border-radius: 5px; border: none; background-color: var(--button-bg); color: var(--button-text); font-size: 16px; font-weight: bold; cursor: pointer; }
+        .form-inputs { display: inline-flex; align-items: center; gap: 10px; margin-right: 15px; }
+        .latest-info-section { border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; margin-bottom: 30px; }
+        .latest-numbers h3 { margin: 0 0 15px 0; font-size: 1rem; color: #aaa; }
+        .ball-container { display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .lotto-ball { display: inline-flex; justify-content: center; align-items: center; width: 40px; height: 40px; border-radius: 50%; color: #fff; font-weight: bold; font-size: 1.1rem; }
+        .color-yellow { background-color: #fbc400; } .color-blue { background-color: #69c8f2; } .color-red { background-color: #ff7272; }
+        .color-gray { background-color: #aaa; } .color-green { background-color: #b0d840; }
+        .plus-sign { font-size: 1.5rem; color: #888; }
+        .countdown-section { display: flex; justify-content: space-around; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); }
+        .countdown-item h4 { margin: 0 0 8px 0; font-size: 0.9rem; color: #aaa; }
+        .countdown-item div { font-size: 1.2rem; font-weight: bold; color: var(--link-color); }
+        .tab-container { margin-top: 20px; width: 100%; }
+        .tabs { display: flex; border-bottom: 2px solid var(--border-color); }
+        .tab-btn { padding: 12px 20px; cursor: pointer; font-size: 1rem; font-weight: bold; color: #888; background-color: transparent; border: none; border-bottom: 3px solid transparent; transition: all 0.2s ease-in-out; }
+        .tab-btn:hover { color: var(--text-color); }
+        .tab-btn.active { color: var(--link-color); border-bottom: 3px solid var(--link-color); }
+        .tab-content-container { padding: 20px 0; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .error-message { color: #ff7272; font-weight: bold; background-color: rgba(255, 114, 114, 0.1); border: 1px solid #ff7272; border-radius: 5px; padding: 10px; margin: 15px 0; }
+        .info-text { margin-top: 20px; margin-bottom: 20px; }
+        .range-info, .date-range-info { font-size: 14px; color: #aaa; margin: 5px 0; }
+        .birthday-results-container { margin-top: 20px; text-align: left; max-height: 400px; overflow-y: auto; }
+        .result-item { display: flex; align-items: center; border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; margin-bottom: 10px; }
+        .result-info { flex-grow: 1; } .result-info h4 { margin: 0 0 5px 0; } .result-info p { margin: 0; color: #aaa; font-size: 0.9rem; }
+        .no-results { color: #aaa; text-align: center; padding: 20px; }
+        .generate-btn { padding: 12px 25px; font-size: 1.1rem; font-weight: bold; cursor: pointer; border-radius: 8px; border: none; background-color: var(--button-bg); color: var(--button-text); }
+        #generator-controls { margin-bottom: 20px; }
+        .generation-info { text-align: center; color: #aaa; margin-top: 20px; min-height: 1.2em; }
+        .generator-grid-container { display: flex; flex-direction: column; gap: 10px; }
+        .lotto-ball.shuffling { filter: blur(2px); transition: filter 0.1s; }
+        #chart-container { width: 100%; max-width: 900px; margin: 40px auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-ad">광고</div>
+        <div class="main-content">
+            <h1>🏆 로또 연구소 🏆</h1>
+
+            {% if latest_winning_numbers %}
+            <div class="latest-info-section">
+                <div class="latest-numbers">
+                    <h3>{{ latest_winning_numbers.round }}회 당첨번호 ({{ latest_winning_numbers.date }})</h3>
+                    <div class="ball-container">
+                        {% for num in latest_winning_numbers.main %}
+                            {% set ball_color = 'color-yellow' if 1 <= num <= 10 else 'color-blue' if 11 <= num <= 20 else 'color-red' if 21 <= num <= 30 else 'color-gray' if 31 <= num <= 40 else 'color-green' %}
+                            <span class="lotto-ball {{ ball_color }}">{{ num }}</span>
+                        {% endfor %}
+                        <span class="plus-sign">+</span>
+                        {% set bonus_num = latest_winning_numbers.bonus %}
+                        {% set bonus_ball_color = 'color-yellow' if 1 <= bonus_num <= 10 else 'color-blue' if 11 <= bonus_num <= 20 else 'color-red' if 21 <= bonus_num <= 30 else 'color-gray' if 31 <= bonus_num <= 40 else 'color-green' %}
+                        <span class="lotto-ball {{ bonus_ball_color }}">{{ bonus_num }}</span>
+                    </div>
+                </div>
+                <div class="countdown-section">
+                    <div class="countdown-item"><h4>다음 추첨까지</h4><div id="draw-countdown">--일 --시간 --분 --초</div></div>
+                    <div class="countdown-item"><h4>구매 마감까지</h4><div id="sales-countdown">--일 --시간 --분 --초</div></div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="tab-container">
+                <div class="tabs">
+                    <div class="tab-btn" data-tab="statistics">역대 당첨번호 통계 분석</div>
+                    <div class="tab-btn" data-tab="birthday">기념일 당첨번호 검색</div>
+                    <div class="tab-btn" data-tab="generator">자동 번호 생성기</div>
+                </div>
+
+                <div class="tab-content-container">
+                    <div class="tab-content" data-tab="statistics">
+                        {% if error_message %}<div class="error-message">{{ error_message }}</div>{% endif %}
+                        <form action="/" method="get">
+                            <div class="form-inputs">
+                                <input type="number" id="start-round" name="start_round" placeholder="1" value="{{ current_start }}"><label for="start-round">회차부터</label>
+                                <input type="number" id="end-round" name="end-round" placeholder="{{ latest_round }}" value="{{ current_end }}"><label for="end-round">까지</label>
+                            </div>
+                            <button type="submit">통계 분석</button>
+                        </form>
+                        <div class="info-text">
+                            <p class="range-info">(입력 가능 범위: 1 ~ {{ latest_round }} 회차)</p>
+                            <p class="range-info">*추천 회차 범위: 836 ~ (황금손 추첨 방식으로 변경)</p>
+                            <p class="date-range-info">분석 기간: {{ end_date }} ~ {{ start_date }}</p>
+                        </div>
+                        <div id="chart-container"><canvas id="lottoChart"></canvas></div>
+                    </div>
+
+                    <div class="tab-content" data-tab="birthday">
+                        <form action="/" method="get">
+                            <div class="form-inputs">
+                                <input type="number" name="birth_month" placeholder="월" value="{{ current_month }}"><label>월</label>
+                                <input type="number" name="birth_day" placeholder="일" value="{{ current_day }}"><label>일</label>
+                            </div>
+                            <button type="submit">찾아보기</button>
+                        </form>
+                        <div class="birthday-results-container">
+                            {% if birthday_section_open %}
+                                {% if birthday_lotto_results %}
+                                    {% for result in birthday_lotto_results %}
+                                        <div class="result-item">
+                                            <div class="result-info"><h4>{{ result.round }}회 당첨</h4><p>{{ result.date }}</p></div>
+                                            <div class="ball-container">
+                                                {% for num in result.main %}
+                                                    {% set ball_color = 'color-yellow' if 1 <= num <= 10 else 'color-blue' if 11 <= num <= 20 else 'color-red' if 21 <= num <= 30 else 'color-gray' if 31 <= num <= 40 else 'color-green' %}
+                                                    <span class="lotto-ball {{ ball_color }}">{{ num }}</span>
+                                                {% endfor %}
+                                                <span class="plus-sign">+</span>
+                                                {% set bonus_num = result.bonus %}
+                                                {% set bonus_ball_color = 'color-yellow' if 1 <= bonus_num <= 10 else 'color-blue' if 11 <= bonus_num <= 20 else 'color-red' if 21 <= bonus_num <= 30 else 'color-gray' if 31 <= bonus_num <= 40 else 'color-green' %}
+                                                <span class="lotto-ball {{ bonus_ball_color }}">{{ bonus_num }}</span>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}<p class="no-results">해당 날짜의 당첨 결과가 없습니다.</p>{% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="tab-content" data-tab="generator">
+                        <div id="generator-controls">
+                            <button id="generate-btn" class="generate-btn">번호 생성하기</button>
+                            <p id="generation-timestamp" class="generation-info"></p>
+                        </div>
+                        <div id="generator-grid" class="generator-grid-container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="right-ad">광고</div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const tabsContainer = document.querySelector('.tabs');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const generateBtn = document.getElementById('generate-btn');
+            const generatorGrid = document.getElementById('generator-grid');
+            const timestampElem = document.getElementById('generation-timestamp');
+            let shufflingInterval = null;
+
+            function updateCountdowns() {
+                const now = new Date();
+                let nextSaturday = new Date(now);
+                nextSaturday.setDate(now.getDate() + (6 - now.getDay() + 7) % 7);
+                const drawTime = new Date(nextSaturday); drawTime.setHours(20, 35, 0, 0);
+                const salesDeadline = new Date(nextSaturday); salesDeadline.setHours(20, 0, 0, 0);
+                if (now > drawTime) { drawTime.setDate(drawTime.getDate() + 7); salesDeadline.setDate(salesDeadline.getDate() + 7); }
+                else if (now > salesDeadline) { salesDeadline.setDate(salesDeadline.getDate() + 7); }
+                const drawElem = document.getElementById('draw-countdown');
+                const salesElem = document.getElementById('sales-countdown');
+                function updateElement(elem, targetTime) {
+                    const diff = targetTime - now; if (diff <= 0) { elem.innerHTML = "마감"; return; }
+                    const d = Math.floor(diff / 86400000), h = Math.floor((diff % 86400000) / 3600000),
+                    m = Math.floor((diff % 3600000) / 60000), s = Math.floor((diff % 60000) / 1000);
+                    elem.innerHTML = `${d}일 ${h}시간 ${m}분 ${s}초`;
+                }
+                if(drawElem) updateElement(drawElem, drawTime);
+                if(salesElem) updateElement(salesElem, salesDeadline);
+            }
+            setInterval(updateCountdowns, 1000);
+            updateCountdowns();
+
+            tabsContainer.addEventListener('click', (e) => {
+                const clickedTab = e.target.closest('.tab-btn');
+                if (!clickedTab) return;
+
+                if (shufflingInterval) clearInterval(shufflingInterval);
+                generatorGrid.innerHTML = '';
+                timestampElem.textContent = '';
+                generateBtn.disabled = false;
+                generateBtn.textContent = '번호 생성하기';
+
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                clickedTab.classList.add('active');
+                tabContents.forEach(content => content.classList.remove('active'));
+                const tabId = clickedTab.dataset.tab;
+                const activeContent = document.querySelector(`.tab-content[data-tab="${tabId}"]`);
+                if (activeContent) activeContent.classList.add('active');
+            });
+
+            const defaultTabId = {% if birthday_section_open %}'birthday'{% elif analysis_section_open %}'statistics'{% else %}'statistics'{% endif %};
+            const defaultTab = document.querySelector(`.tab-btn[data-tab="${defaultTabId}"]`);
+            if (defaultTab) {
+                defaultTab.click(); // 탭을 클릭하여 보이게 만듦
+            }
+
+            const chartCtx = document.getElementById('lottoChart');
+            if (chartCtx) {
+                const chartLabels = {{ chart_labels | tojson }};
+                const chartData = {{ chart_data | tojson }};
+                const chartOptions = {
+                    scales: {
+                        y: { beginAtZero: true, ticks: { color: 'rgba(255, 255, 255, 0.7)' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } },
+                        x: { ticks: { color: 'rgba(255, 255, 255, 0.7)', autoSkip: false }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }
+                    },
+                    plugins: { legend: { labels: { color: 'rgba(255, 255, 255, 0.9)' } } }
+                };
+                new Chart(chartCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: { labels: chartLabels, datasets: [{ label: '번호별 당첨 횟수', data: chartData, backgroundColor: 'rgba(187, 134, 252, 0.6)', borderColor: 'rgba(187, 134, 252, 1)', borderWidth: 1 }] },
+                    options: chartOptions
+                });
+            }
+
+            generateBtn.addEventListener('click', () => {
+                generateBtn.disabled = true;
+                generateBtn.textContent = '번호 생성 중...';
+                timestampElem.textContent = '';
+                generatorGrid.innerHTML = '';
+                if (shufflingInterval) clearInterval(shufflingInterval);
+
+                const allBalls = [];
+                for (let i = 0; i < 5; i++) {
+                    const setContainer = document.createElement('div');
+                    setContainer.className = 'ball-container';
+                    for (let j = 0; j < 6; j++) {
+                        const ball = document.createElement('span');
+                        ball.className = 'lotto-ball shuffling';
+                        ball.textContent = Math.floor(Math.random() * 45) + 1;
+                        setContainer.appendChild(ball);
+                        allBalls.push(ball);
+                    }
+                    generatorGrid.appendChild(setContainer);
+                }
+
+                shufflingInterval = setInterval(() => {
+                    allBalls.forEach(ball => {
+                        ball.textContent = Math.floor(Math.random() * 45) + 1;
+                    });
+                }, 80);
+
+                fetch('/api/generate-numbers')
+                    .then(response => response.json())
+                    .then(numberSets => {
+                        setTimeout(() => {
+                            clearInterval(shufflingInterval);
+                            const finalNumbers = numberSets.flat();
+                            allBalls.forEach((ball, index) => {
+                                setTimeout(() => {
+                                    const finalNum = finalNumbers[index];
+                                    ball.textContent = finalNum;
+                                    ball.classList.remove('shuffling');
+                                    let colorClass = 'color-green';
+                                    if (finalNum <= 10) colorClass = 'color-yellow';
+                                    else if (finalNum <= 20) colorClass = 'color-blue';
+                                    else if (finalNum <= 30) colorClass = 'color-red';
+                                    else if (finalNum <= 40) colorClass = 'color-gray';
+                                    ball.className = 'lotto-ball ' + colorClass;
+                                    if (index === allBalls.length - 1) {
+                                        generateBtn.disabled = false;
+                                        generateBtn.textContent = '다시 생성하기';
+                                        const now = new Date();
+                                        timestampElem.textContent = `우주의 기운을 모아 ${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일 ${now.getHours()}시 ${now.getMinutes()}분 ${now.getSeconds()}초에 생성된 번호입니다!`;
+                                    }
+                                }, 100 * index);
+                            });
+                        }, 1000);
+                    })
+                    .catch(error => { console.error('Error fetching numbers:', error); /* ... */ });
+            });
+        });
+    </script>
+
+</body>
+</html>
