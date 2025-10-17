@@ -1,13 +1,11 @@
 blinker==1.9.0
 click==8.3.0
-et_xmlfile @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_29xjd2rw2y/croot/et_xmlfile_1756462494507/work
-Flask==3.1.2
+lask==3.1.2
 gunicorn==23.0.0
 itsdangerous==2.2.0
 Jinja2==3.1.6
 MarkupSafe==3.0.3
 numpy==2.2.6
-openpyxl @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_96hhik4ygv/croot/openpyxl_1721752931204/work
 packaging==25.0
 pandas==2.3.3
 python-dateutil==2.9.0.post0
