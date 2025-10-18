@@ -39,8 +39,8 @@
         .countdown-item h4 { margin: 0 0 8px 0; font-size: 0.9rem; color: #aaa; }
         .countdown-item div { font-size: 1.2rem; font-weight: bold; color: var(--link-color); }
         .tab-container { margin-top: 20px; width: 100%; }
-        .tabs { display: flex; border-bottom: 2px solid var(--border-color); }
-        .tab-btn { padding: 12px 20px; cursor: pointer; font-size: 1rem; font-weight: bold; color: #888; background-color: transparent; border: none; border-bottom: 3px solid transparent; transition: all 0.2s ease-in-out; }
+        .tabs { display: flex; border-bottom: 2px solid var(--border-color); flex-wrap: wrap; /* Allow tabs to wrap on mobile */ }
+        .tab-btn { padding: 12px 20px; cursor: pointer; font-size: 1rem; font-weight: bold; color: #888; background-color: transparent; border: none; border-bottom: 3px solid transparent; transition: all 0.2s ease-in-out; white-space: nowrap; /* Prevent button text wrapping */ }
         .tab-btn:hover { color: var(--text-color); }
         .tab-btn.active { color: var(--link-color); border-bottom: 3px solid var(--link-color); }
         .tab-content-container { padding: 20px 0; }
@@ -61,9 +61,9 @@
         #chart-container { width: 100%; max-width: 900px; margin: 40px auto; }
         .lab-container { display: flex; gap: 20px; align-items: flex-start; }
         .lab-number-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--primary-bg); flex-shrink: 0; width: fit-content; }
-        .lab-ball-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border-color); color: var(--text-color); font-size: 1rem; font-weight: bold; cursor: pointer; transition: background-color 0.2s, transform 0.1s; }
-        .lab-ball-btn:hover { background-color: #555; }
-        .lab-ball-btn.selected { color: var(--button-text); transform: scale(1.1); }
+        .lab-ball-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border-color); color: #fff !important; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background-color 0.2s, transform 0.1s; }
+        .lab-ball-btn:hover { opacity: 0.8; }
+        .lab-ball-btn.selected { color: var(--button-text) !important; transform: scale(1.1); }
         .lab-results { flex-grow: 1; border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; background-color: var(--primary-bg); text-align: left; min-height: 300px; }
         .lab-placeholder { color: #888; text-align: center; margin-top: 50px; }
         .lab-results h4 { margin-top: 15px; margin-bottom: 8px; color: var(--link-color); border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
@@ -72,18 +72,45 @@
         .lab-results li { margin-bottom: 5px; }
         .lab-results .probability { font-weight: bold; color: #fff; }
         .no-data { color: #888; font-style: italic; }
+        .evaluate-container { display: flex; gap: 20px; align-items: flex-start; }
+        .evaluate-number-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--primary-bg); flex-shrink: 0; width: fit-content; }
+        .eval-ball-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border-color); color: #fff !important; font-size: 1rem; font-weight: bold; cursor: pointer; transition: transform 0.1s, opacity 0.2s; }
+        .eval-ball-btn:hover { opacity: 0.8; }
+        .eval-ball-btn.disabled { opacity: 0.3; cursor: not-allowed; }
+        .eval-ball-btn.selected { transform: scale(0.9); opacity: 0.5; border-width: 2px; }
+        .evaluate-results { flex-grow: 1; text-align: center; }
+        .selected-numbers-display { min-height: 60px; border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; margin-bottom: 20px; background-color: var(--primary-bg); display: flex; justify-content: center; align-items: center; }
+        .selection-guide { color: #888; }
+        .selected-numbers-display .ball-container { gap: 15px; }
+        .selected-numbers-display .ball-container { gap: 10px; }
+        .selected-numbers-display .lotto-ball { width: 30px; height: 30px; font-size: 0.9rem; }
+        .evaluate-btn { padding: 12px 25px; font-size: 1.1rem; background-color: var(--button-bg); color: var(--button-text); border: none; border-radius: 8px; cursor: pointer; margin-bottom: 20px; font-weight: bold;}
+        .evaluate-btn:disabled { background-color: #555; cursor: not-allowed; }
+        .evaluation-output-container { text-align: left; border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; background-color: var(--primary-bg); min-height: 100px; max-height: 400px; overflow-y: auto; }
+        .evaluation-output-container .result-item { padding: 10px; }
+        .evaluation-output-container .no-match-message { text-align: center; color: #aaa; padding: 30px 0; }
+        .evaluation-output-container .lotto-ball { width: 20px; height: 20px; font-size: 0.9rem; }
 
         @media (max-width: 768px) {
             .left-ad, .right-ad { display: none; }
             .main-content { flex: 1; padding: 15px; }
+            .tabs { justify-content: center; /* Center tabs on mobile */ }
+            .tab-btn { padding: 10px 15px; font-size: 0.9rem; }
             .lotto-ball { width: 35px; height: 35px; font-size: 1rem; }
-            .ball-container { gap: 5px; flex-wrap: wrap; }
-            .form-inputs { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+            .ball-container { gap: 5px; }
+            .form-inputs { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; margin-right: 0; }
+            form button { width: 100%; /* Make buttons full width */ }
             h1 { font-size: 1.8rem; }
             .lab-container { flex-direction: column; }
-            .lab-number-grid { grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); width: 100%; }
+            .lab-number-grid { grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); width: 100%; box-sizing: border-box;}
             .lab-ball-btn { width: 35px; height: 35px; }
-            .lab-results { min-height: auto; width: calc(100% - 40px); }
+            .lab-results { min-height: auto; width: 100%; box-sizing: border-box; padding: 15px; }
+            .evaluate-container { flex-direction: column; }
+            .evaluate-number-grid { width: 100%; grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); box-sizing: border-box;}
+            .eval-ball-btn { width: 35px; height: 35px; }
+            .evaluate-results { width: 100%; box-sizing: border-box;}
+            .selected-numbers-display { padding: 10px; }
+            .evaluation-output-container { padding: 15px; }
         }
     </style>
 </head>
@@ -117,10 +144,11 @@
 
             <div class="tab-container">
                 <div class="tabs">
-                    <div class="tab-btn" data-tab="statistics">역대 당첨번호 통계 분석</div>
-                    <div class="tab-btn" data-tab="birthday">기념일 당첨번호 검색</div>
+                    <div class="tab-btn" data-tab="statistics">당첨번호 통계 분석</div>
+                    <div class="tab-btn" data-tab="birthday">기념일 번호 검색</div>
                     <div class="tab-btn" data-tab="generator">자동 번호 생성기</div>
                     <div class="tab-btn" data-tab="lab">실험실</div>
+                    <div class="tab-btn" data-tab="evaluate">내 번호 평가하기</div>
                 </div>
 
                 <div class="tab-content-container">
@@ -184,18 +212,30 @@
                         <div class="lab-container">
                             <div class="lab-number-grid">
                                 {% for i in range(1, 46) %}
-                                    {# 번호 값에 따라 색상 클래스 결정 #}
-                                    {% set ball_color = 'color-yellow' if 1 <= i <= 10 else
-                                                        'color-blue' if 11 <= i <= 20 else
-                                                        'color-red' if 21 <= i <= 30 else
-                                                        'color-gray' if 31 <= i <= 40 else
-                                                        'color-green' %}
-                                    {# 결정된 색상 클래스를 버튼에 추가 #}
+                                    {% set ball_color = 'color-yellow' if 1 <= i <= 10 else 'color-blue' if 11 <= i <= 20 else 'color-red' if 21 <= i <= 30 else 'color-gray' if 31 <= i <= 40 else 'color-green' %}
                                     <button class="lab-ball-btn {{ ball_color }}" data-number="{{ i }}">{{ i }}</button>
                                 {% endfor %}
                             </div>
                             <div class="lab-results">
                                 <p class="lab-placeholder">왼쪽에서 분석할 번호를 선택하세요.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" data-tab="evaluate">
+                        <div class="evaluate-container">
+                            <div class="evaluate-number-grid">
+                                {% for i in range(1, 46) %}
+                                    {% set ball_color = 'color-yellow' if 1 <= i <= 10 else 'color-blue' if 11 <= i <= 20 else 'color-red' if 21 <= i <= 30 else 'color-gray' if 31 <= i <= 40 else 'color-green' %}
+                                    <button class="eval-ball-btn {{ ball_color }}" data-number="{{ i }}">{{ i }}</button>
+                                {% endfor %}
+                            </div>
+                            <div class="evaluate-results">
+                                <div class="selected-numbers-display">
+                                    <p class="selection-guide">왼쪽에서 6개의 번호를 선택하세요.</p>
+                                </div>
+                                <button id="evaluate-btn" class="evaluate-btn" disabled>평가하기</button>
+                                <div id="evaluation-output" class="evaluation-output-container"></div>
                             </div>
                         </div>
                     </div>
@@ -216,11 +256,15 @@
             const timestampElem = document.getElementById('generation-timestamp');
             const labNumberGrid = document.querySelector('.lab-number-grid');
             const labResultsContainer = document.querySelector('.lab-results');
-            const labPlaceholder = document.querySelector('.lab-placeholder');
+            const evaluateNumberGrid = document.querySelector('.evaluate-number-grid');
+            const selectedNumbersDisplay = document.querySelector('.selected-numbers-display');
+            const evaluateBtn = document.getElementById('evaluate-btn');
+            const evaluationOutput = document.getElementById('evaluation-output');
 
             let shufflingInterval = null;
-            let selectedLabBall = null; // 실험실에서 선택된 번호 버튼 요소
-            let lottoChartInstance = null; // 차트 객체를 저장할 변수
+            let selectedLabBall = null; // 실험실에서 선택된 버튼
+            let lottoChartInstance = null; // 차트 인스턴스
+            let selectedEvalNumbers = new Set(); // 평가하기에서 선택된 번호 Set
 
             // --- 2. 카운트다운 기능 ---
             function updateCountdowns() {
@@ -241,71 +285,85 @@
                 if(drawElem) updateElement(drawElem, drawTime);
                 if(salesElem) updateElement(salesElem, salesDeadline);
             }
-            setInterval(updateCountdowns, 1000);
-            updateCountdowns();
+            if(document.getElementById('draw-countdown')) { // 요소 존재 확인 후 실행
+                setInterval(updateCountdowns, 1000);
+                updateCountdowns();
+            }
 
             // --- 3. 탭 기능 ---
-            tabsContainer.addEventListener('click', (e) => {
-                const clickedTab = e.target.closest('.tab-btn');
-                if (!clickedTab) return;
+            if (tabsContainer) {
+                tabsContainer.addEventListener('click', (e) => {
+                    const clickedTab = e.target.closest('.tab-btn');
+                    if (!clickedTab) return;
 
-                const tabId = clickedTab.dataset.tab;
+                    const tabId = clickedTab.dataset.tab;
 
-                // 다른 탭으로 이동 시 관련 기능 초기화
-                if (tabId !== 'generator') {
-                    if (shufflingInterval) clearInterval(shufflingInterval);
-                    generatorGrid.innerHTML = '';
-                    timestampElem.textContent = '';
-                    if(generateBtn) {
-                         generateBtn.disabled = false;
-                         generateBtn.textContent = '번호 생성하기';
+                    // 다른 탭으로 이동 시 관련 기능 초기화
+                    if (tabId !== 'generator') resetGenerator();
+                    if (tabId !== 'lab') resetLab();
+                    if (tabId !== 'evaluate') resetEvaluate();
+
+                    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                    clickedTab.classList.add('active');
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    const activeContent = document.querySelector(`.tab-content[data-tab="${tabId}"]`);
+                    if (activeContent) activeContent.classList.add('active');
+
+                    // 통계 탭이 활성화되면 차트 초기화 (이미 있으면 다시 안 그림)
+                    if (tabId === 'statistics' && !lottoChartInstance) {
+                        initializeChart();
                     }
-                }
-                if (tabId !== 'lab') {
-                     if (selectedLabBall) {
-                         selectedLabBall.classList.remove('selected');
-                         selectedLabBall = null;
-                     }
-                     if (labResultsContainer) {
-                         labResultsContainer.innerHTML = '<p class="lab-placeholder">왼쪽에서 분석할 번호를 선택하세요.</p>';
-                     }
-                }
-
-                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-                clickedTab.classList.add('active');
-                tabContents.forEach(content => content.classList.remove('active'));
-                const activeContent = document.querySelector(`.tab-content[data-tab="${tabId}"]`);
-                if (activeContent) activeContent.classList.add('active');
-
-                // ✨ 통계 탭이 활성화되면 차트를 그림 (이미 그려져 있다면 다시 그리지 않음)
-                if (tabId === 'statistics' && !lottoChartInstance) {
-                    initializeChart();
-                }
-            });
+                });
+            }
 
             // --- 4. 차트 생성 함수 ---
             function initializeChart() {
                 const chartCtx = document.getElementById('lottoChart');
-                if (chartCtx) {
-                    const chartLabels = {{ chart_labels | tojson }};
-                    const chartData = {{ chart_data | tojson }};
-                    const chartOptions = {
-                        scales: {
-                            y: { beginAtZero: true, ticks: { color: 'rgba(255, 255, 255, 0.7)' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } },
-                            x: { ticks: { color: 'rgba(255, 255, 255, 0.7)', autoSkip: false }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }
-                        },
-                        plugins: { legend: { labels: { color: 'rgba(255, 255, 255, 0.9)' } } }
-                    };
-                    // 차트 인스턴스 저장
-                    lottoChartInstance = new Chart(chartCtx.getContext('2d'), {
-                        type: 'bar',
-                        data: { labels: chartLabels, datasets: [{ label: '번호별 당첨 횟수', data: chartData, backgroundColor: 'rgba(187, 134, 252, 0.6)', borderColor: 'rgba(187, 134, 252, 1)', borderWidth: 1 }] },
-                        options: chartOptions
-                    });
+                if (chartCtx && typeof Chart !== 'undefined') { // Chart.js 로드 확인
+                    // 기존 차트가 있으면 파괴
+                    if (lottoChartInstance) {
+                        lottoChartInstance.destroy();
+                    }
+                    try {
+                        const chartLabels = {{ chart_labels | tojson }};
+                        const chartData = {{ chart_data | tojson }};
+                        const chartOptions = {
+                            responsive: true, // 반응형 활성화
+                            maintainAspectRatio: false, // 비율 유지 비활성화 (컨테이너 크기에 맞춤)
+                            scales: {
+                                y: { beginAtZero: true, ticks: { color: 'rgba(255, 255, 255, 0.7)' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } },
+                                x: { ticks: { color: 'rgba(255, 255, 255, 0.7)', autoSkip: false }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }
+                            },
+                            plugins: { legend: { labels: { color: 'rgba(255, 255, 255, 0.9)' } } }
+                        };
+                        lottoChartInstance = new Chart(chartCtx.getContext('2d'), {
+                            type: 'bar',
+                            data: { labels: chartLabels, datasets: [{ label: '번호별 당첨 횟수', data: chartData, backgroundColor: 'rgba(187, 134, 252, 0.6)', borderColor: 'rgba(187, 134, 252, 1)', borderWidth: 1 }] },
+                            options: chartOptions
+                        });
+                    } catch (e) {
+                        console.error("Error initializing chart:", e);
+                        // Jinja 변수 로딩 실패 시 사용자에게 알림 (선택 사항)
+                        const chartContainer = document.getElementById('chart-container');
+                        if(chartContainer) chartContainer.innerHTML = '<p style="color:red;">차트 데이터를 불러오는 데 실패했습니다.</p>';
+                    }
+                } else {
+                    console.log("Chart canvas not found or Chart.js not loaded.");
                 }
             }
 
-            // --- 5. 자동 번호 생성기 기능 ---
+
+            // --- 5. 자동 번호 생성기 기능 & 초기화 ---
+            function resetGenerator() {
+                 if (shufflingInterval) clearInterval(shufflingInterval);
+                 if (generatorGrid) generatorGrid.innerHTML = '';
+                 if (timestampElem) timestampElem.textContent = '';
+                 if (generateBtn) {
+                      generateBtn.disabled = false;
+                      generateBtn.textContent = '번호 생성하기';
+                 }
+            }
+
             if (generateBtn) {
                 generateBtn.addEventListener('click', () => {
                     generateBtn.disabled = true;
@@ -330,12 +388,14 @@
 
                     shufflingInterval = setInterval(() => {
                         allBalls.forEach(ball => {
-                            ball.textContent = Math.floor(Math.random() * 45) + 1;
+                            if (ball.classList.contains('shuffling')) { // 셔플링 중인 볼만 업데이트
+                                ball.textContent = Math.floor(Math.random() * 45) + 1;
+                            }
                         });
                     }, 80);
 
                     fetch('/api/generate-numbers')
-                        .then(response => response.json())
+                        .then(response => response.ok ? response.json() : Promise.reject('Network error'))
                         .then(numberSets => {
                             setTimeout(() => {
                                 clearInterval(shufflingInterval);
@@ -350,7 +410,7 @@
                                         else if (finalNum <= 20) colorClass = 'color-blue';
                                         else if (finalNum <= 30) colorClass = 'color-red';
                                         else if (finalNum <= 40) colorClass = 'color-gray';
-                                        ball.className = 'lotto-ball ' + colorClass;
+                                        ball.className = 'lotto-ball ' + colorClass; // 이전 클래스 초기화 후 색상 적용
                                         if (index === allBalls.length - 1) {
                                             generateBtn.disabled = false;
                                             generateBtn.textContent = '다시 생성하기';
@@ -359,31 +419,39 @@
                                         }
                                     }, 100 * index);
                                 });
-                            }, 1000);
+                            }, 1000); // 1초간 셔플링 후 멈춤 시작
                         })
                         .catch(error => {
                             console.error('Error fetching numbers:', error);
-                            generateBtn.disabled = false;
-                            generateBtn.textContent = '오류 발생! 다시 시도';
+                            if(generateBtn) {
+                                generateBtn.disabled = false;
+                                generateBtn.textContent = '오류 발생! 다시 시도';
+                            }
                             clearInterval(shufflingInterval);
                         });
                 });
             }
 
-            // --- 6. 실험실 기능 ---
+            // --- 6. 실험실 기능 & 초기화 ---
+             function resetLab() {
+                if (selectedLabBall) {
+                    selectedLabBall.classList.remove('selected');
+                    selectedLabBall = null;
+                }
+                if (labResultsContainer) {
+                    labResultsContainer.innerHTML = '<p class="lab-placeholder">왼쪽에서 분석할 번호를 선택하세요.</p>';
+                }
+            }
+
             if (labNumberGrid && labResultsContainer) {
                  labNumberGrid.addEventListener('click', (e) => {
                     const clickedBall = e.target.closest('.lab-ball-btn');
                     if (!clickedBall) return;
-
                     const number = clickedBall.dataset.number;
-
                     if (selectedLabBall) selectedLabBall.classList.remove('selected');
                     clickedBall.classList.add('selected');
                     selectedLabBall = clickedBall;
-
                     labResultsContainer.innerHTML = '<p class="lab-placeholder">데이터 분석 중...</p>';
-
                     fetch(`/api/analyze-number/${number}`)
                         .then(response => response.ok ? response.json() : Promise.reject('Network response was not ok'))
                         .then(data => displayLabResults(number, data))
@@ -393,8 +461,6 @@
                         });
                 });
             }
-
-            // 분석 결과를 HTML로 변환하여 표시하는 함수
             function displayLabResults(number, data) {
                  if (!labResultsContainer) return;
                  labResultsContainer.innerHTML = `<h4>1. ${number}번 당첨 확률</h4><p>역대 총 ${data.appearance_count}번 등장 (<span class="probability">${(data.probability * 100).toFixed(2)}%</span>)</p>`;
@@ -404,31 +470,101 @@
                  labResultsContainer.innerHTML += formatProbList(`5. ${number}번 다음에 나올 확률 (Bottom 3)`, data.next_bottom3);
                  labResultsContainer.innerHTML += `<h4>6. ${number}번 최대 연속 등장 횟수</h4><p><span class="probability">${data.max_consecutive}회</span></p>`;
             }
-
-            // 확률 목록 표시 Helper 함수
             function formatProbList(title, list) {
                 let html = `<h4>${title}</h4>`;
                 if (list && list.length > 0) {
                     html += '<ul>';
                     list.forEach(item => { html += `<li>${item[0]}번: <span class="probability">${(item[1] * 100).toFixed(2)}%</span></li>`; });
                     html += '</ul>';
-                } else {
-                    html += '<p class="no-data">해당하는 숫자가 없습니다.</p>';
-                }
+                } else { html += '<p class="no-data">해당하는 숫자가 없습니다.</p>'; }
                 return html;
             }
 
-             // --- 7. 페이지 로드 시 기본 탭 활성화 ---
-             // 이 코드는 다른 이벤트 리스너들이 모두 설정된 *후*에 실행되어야 합니다.
-             const defaultTabId = {% if birthday_section_open %}'birthday'{% elif analysis_section_open %}'statistics'{% else %}'statistics'{% endif %};
-             const defaultTab = document.querySelector(`.tab-btn[data-tab="${defaultTabId}"]`);
-             if (defaultTab) {
-                 defaultTab.click(); // .click()으로 탭 활성화 로직 실행
-             } else {
-                 // 혹시 defaultTab을 못 찾을 경우 대비, 첫 번째 탭이라도 활성화
-                 const firstTab = document.querySelector('.tab-btn');
-                 if (firstTab) firstTab.click();
-             }
+            // --- 7. 내 번호 평가하기 기능 & 초기화 ---
+            function resetEvaluate() {
+                 selectedEvalNumbers.clear();
+                 if (evaluateNumberGrid) {
+                    evaluateNumberGrid.querySelectorAll('.eval-ball-btn').forEach(btn => {
+                        btn.classList.remove('selected', 'disabled');
+                    });
+                 }
+                 if(selectedNumbersDisplay) updateSelectedNumbersDisplay();
+                 if(evaluateBtn) updateEvaluateButtonState();
+                 if(evaluationOutput) evaluationOutput.innerHTML = '';
+            }
+
+            if (evaluateNumberGrid && selectedNumbersDisplay && evaluateBtn && evaluationOutput) {
+                evaluateNumberGrid.addEventListener('click', (e) => {
+                    const clickedBtn = e.target.closest('.eval-ball-btn');
+                    if (!clickedBtn || clickedBtn.classList.contains('disabled')) return;
+                    const number = parseInt(clickedBtn.dataset.number);
+                    if (selectedEvalNumbers.has(number)) {
+                        selectedEvalNumbers.delete(number); clickedBtn.classList.remove('selected');
+                    } else {
+                        if (selectedEvalNumbers.size < 6) { selectedEvalNumbers.add(number); clickedBtn.classList.add('selected'); }
+                    }
+                    updateSelectedNumbersDisplay();
+                    updateEvaluateButtonState();
+                    updateGridDisabledState();
+                });
+                evaluateBtn.addEventListener('click', () => {
+                    const numbersQuery = Array.from(selectedEvalNumbers).sort((a, b) => a - b).join(',');
+                    evaluationOutput.innerHTML = '<p class="no-results">결과를 검색 중입니다...</p>';
+                    fetch(`/api/evaluate-numbers?numbers=${numbersQuery}`)
+                        .then(response => response.ok ? response.json() : Promise.reject('Network error'))
+                        .then(matches => displayEvaluationResults(matches))
+                        .catch(error => {
+                            console.error("Evaluation fetch error:", error);
+                            evaluationOutput.innerHTML = '<p class="no-results" style="color:red;">검색 중 오류가 발생했습니다.</p>';
+                        });
+                });
+            }
+            function updateSelectedNumbersDisplay() {
+                if (!selectedNumbersDisplay) return;
+                selectedNumbersDisplay.innerHTML = '';
+                if (selectedEvalNumbers.size === 0) { selectedNumbersDisplay.innerHTML = '<p class="selection-guide">왼쪽에서 6개의 번호를 선택하세요.</p>'; return; }
+                const ballContainer = document.createElement('div'); ballContainer.className = 'ball-container';
+                const sortedNumbers = Array.from(selectedEvalNumbers).sort((a, b) => a - b);
+                sortedNumbers.forEach(num => {
+                    const ball = document.createElement('span'); ball.className = 'lotto-ball'; ball.textContent = num;
+                    let c = 'color-green'; if (num <= 10) c = 'color-yellow'; else if (num <= 20) c = 'color-blue'; else if (num <= 30) c = 'color-red'; else if (num <= 40) c = 'color-gray'; ball.classList.add(c);
+                    ballContainer.appendChild(ball);
+                }); selectedNumbersDisplay.appendChild(ballContainer);
+            }
+            function updateEvaluateButtonState() { if(evaluateBtn) evaluateBtn.disabled = selectedEvalNumbers.size !== 6; }
+            function updateGridDisabledState() {
+                if (!evaluateNumberGrid) return;
+                const allEvalBtns = evaluateNumberGrid.querySelectorAll('.eval-ball-btn');
+                if (selectedEvalNumbers.size === 6) { allEvalBtns.forEach(btn => { if (!selectedEvalNumbers.has(parseInt(btn.dataset.number))) btn.classList.add('disabled'); }); }
+                else { allEvalBtns.forEach(btn => btn.classList.remove('disabled')); }
+            }
+            function displayEvaluationResults(matches) {
+                if (!evaluationOutput) return;
+                evaluationOutput.innerHTML = '';
+                if (matches && matches.length > 0) {
+                     matches.forEach(result => {
+                        const itemDiv = document.createElement('div'); itemDiv.className = 'result-item';
+                        const infoDiv = document.createElement('div'); infoDiv.className = 'result-info'; infoDiv.innerHTML = `<h4>${result.round}회 당첨</h4><p>${result.date}</p>`;
+                        const ballContainer = document.createElement('div'); ballContainer.className = 'ball-container';
+                        result.main.forEach(num => {
+                            const ball = document.createElement('span'); ball.className = 'lotto-ball'; ball.textContent = num;
+                            let c = 'color-green'; if (num <= 10) c = 'color-yellow'; else if (num <= 20) c = 'color-blue'; else if (num <= 30) c = 'color-red'; else if (num <= 40) c = 'color-gray'; ball.classList.add(c);
+                            ballContainer.appendChild(ball);
+                        });
+                        itemDiv.appendChild(infoDiv); itemDiv.appendChild(ballContainer); evaluationOutput.appendChild(itemDiv);
+                     });
+                } else { evaluationOutput.innerHTML = '<p class="no-match-message">역대 당첨 번호에 없는 새로운 조합입니다!</p>'; }
+            }
+
+            // --- 8. 페이지 로드 시 기본 탭 활성화 ---
+            const defaultTabId = {% if birthday_section_open %}'birthday'{% elif analysis_section_open %}'statistics'{% else %}'statistics'{% endif %};
+            const defaultTab = document.querySelector(`.tab-btn[data-tab="${defaultTabId}"]`);
+            if (defaultTab) {
+                defaultTab.click(); // .click()으로 탭 활성화 로직 실행 + 차트 초기화 트리거
+            } else {
+                const firstTab = document.querySelector('.tab-btn'); // 기본 탭 못 찾으면 첫 탭이라도 활성화
+                if (firstTab) firstTab.click();
+            }
 
         }); // End of document.addEventListener('DOMContentLoaded', ...)
     </script>

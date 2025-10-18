@@ -1,4 +1,6 @@
 import random
+from collections import Counter
+import numpy as np
 import pandas as pd
 from flask import Flask, render_template, request, jsonify
 
@@ -140,11 +142,7 @@ def generate_numbers():
     return jsonify(number_sets)
 
 
-from collections import Counter  # 파일 상단에 추가해야 합니다.
-import numpy as np  # 파일 상단에 추가해야 합니다.
 
-
-# ... 기존 @app.route('/') 함수 및 @app.route('/api/generate-numbers') 함수 ...
 
 # ✨ 실험실 번호 분석을 위한 API 라우트 추가 ✨
 @app.route('/api/analyze-number/<int:selected_number>')
@@ -220,8 +218,38 @@ def analyze_number(selected_number):
 
     return jsonify(results)  # 이제 안전하게 JSON으로 변환 가능
 
+@app.route('/api/evaluate-numbers')
+def evaluate_numbers():
+    # URL 쿼리 파라미터에서 'numbers' 값을 가져옵니다 (쉼표로 구분된 문자열)
+    numbers_str = request.args.get('numbers', '')
+    if not numbers_str:
+        return jsonify({"error": "No numbers provided"}), 400
 
-# ... if __name__ == '__main__': ...
+    try:
+        # 쉼표로 구분된 문자열을 정수 리스트로 변환하고 정렬
+        selected_numbers = sorted([int(n) for n in numbers_str.split(',')])
+        if len(selected_numbers) != 6:
+            return jsonify({"error": "Exactly 6 numbers are required"}), 400
+        if not all(1 <= num <= 45 for num in selected_numbers):
+             return jsonify({"error": "Numbers must be between 1 and 45"}), 400
+    except ValueError:
+        return jsonify({"error": "Invalid number format"}), 400
+
+    matches = []
+    if not lotto_df.empty:
+        number_columns = ['1', '2', '3', '4', '5', '6']
+        # 데이터프레임의 당첨번호도 정렬하여 비교
+        for index, row in lotto_df.iterrows():
+            winning_numbers = sorted(row[number_columns].astype(int).tolist())
+            if winning_numbers == selected_numbers:
+                matches.append({
+                    "round": int(row['No']), # JSON 호환성을 위해 int로 변환
+                    "date": row['Date'],
+                    "main": winning_numbers # 이미 정렬된 상태
+                })
+
+    return jsonify(matches)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
