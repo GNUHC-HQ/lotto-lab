@@ -139,5 +139,89 @@ def generate_numbers():
     # 생성된 번호 세트를 JSON 형태로 반환
     return jsonify(number_sets)
 
+
+from collections import Counter  # 파일 상단에 추가해야 합니다.
+import numpy as np  # 파일 상단에 추가해야 합니다.
+
+
+# ... 기존 @app.route('/') 함수 및 @app.route('/api/generate-numbers') 함수 ...
+
+# ✨ 실험실 번호 분석을 위한 API 라우트 추가 ✨
+@app.route('/api/analyze-number/<int:selected_number>')
+def analyze_number(selected_number):
+    if lotto_df.empty or not (1 <= selected_number <= 45):
+        return jsonify({"error": "Invalid number or data not loaded"}), 400
+
+    total_draws = len(lotto_df)
+    results = {}
+
+    # 1. 역대 당첨 확률
+    number_columns = ['1', '2', '3', '4', '5', '6']  # 보너스 제외
+    appears = lotto_df[number_columns].isin([selected_number]).any(axis=1)
+    appearance_count = appears.sum()
+    results['probability'] = appearance_count / total_draws if total_draws > 0 else 0
+    results['appearance_count'] = appearance_count
+
+    # 2-5. 이전/다음 번호 확률 분석
+    prev_counts = Counter()
+    next_counts = Counter()
+    valid_draws_for_neighbors = 0  # 선택된 번호가 포함된 유효 추첨 횟수
+
+    for index, row in lotto_df.iterrows():
+        numbers = sorted(row[number_columns].astype(int).tolist())  # 해당 회차 번호 정렬
+        try:
+            idx = numbers.index(selected_number)
+            valid_draws_for_neighbors += 1
+            if idx > 0:
+                prev_counts[numbers[idx - 1]] += 1
+            if idx < len(numbers) - 1:
+                next_counts[numbers[idx + 1]] += 1
+        except ValueError:
+            continue  # 해당 회차에 선택된 번호가 없음
+
+    def get_top_bottom_3(counts, total_valid_draws):
+        if not counts or total_valid_draws == 0:
+            return [], []
+
+        # 확률 계산: (해당 숫자가 이웃으로 나온 횟수) / (선택된 번호가 이웃과 함께 나온 총 횟수)
+        probabilities = {num: count / total_valid_draws for num, count in counts.items()}
+        sorted_probs = sorted(probabilities.items(), key=lambda item: item[1], reverse=True)
+
+        top3 = sorted_probs[:3]
+        bottom3 = sorted(probabilities.items(), key=lambda item: item[1])[:3]  # 오름차순 정렬 후 상위 3개
+        return top3, bottom3
+
+    results['prev_top3'], results['prev_bottom3'] = get_top_bottom_3(prev_counts, valid_draws_for_neighbors)
+    results['next_top3'], results['next_bottom3'] = get_top_bottom_3(next_counts, valid_draws_for_neighbors)
+
+    # 6. 최대 연속 등장 횟수
+    max_consecutive = 0
+    current_consecutive = 0
+    for appears_in_draw in reversed(appears):
+        if appears_in_draw:
+            current_consecutive += 1
+        else:
+            max_consecutive = max(max_consecutive, current_consecutive)
+            current_consecutive = 0
+    max_consecutive = max(max_consecutive, current_consecutive)
+    results['max_consecutive'] = max_consecutive
+
+    # ✨--- JSON 변환 전 타입 변환 ---✨
+    # NumPy int64 타입을 표준 int 타입으로 변환합니다.
+    results['appearance_count'] = int(results['appearance_count'])
+    results['max_consecutive'] = int(results['max_consecutive'])
+
+    # 확률 리스트 내부의 숫자도 int로 변환 (이미 int일 수 있지만 안전하게)
+    results['prev_top3'] = [(int(num), prob) for num, prob in results['prev_top3']]
+    results['prev_bottom3'] = [(int(num), prob) for num, prob in results['prev_bottom3']]
+    results['next_top3'] = [(int(num), prob) for num, prob in results['next_top3']]
+    results['next_bottom3'] = [(int(num), prob) for num, prob in results['next_bottom3']]
+    # ✨-----------------------------✨
+
+    return jsonify(results)  # 이제 안전하게 JSON으로 변환 가능
+
+
+# ... if __name__ == '__main__': ...
+
 if __name__ == '__main__':
     app.run(debug=True)
